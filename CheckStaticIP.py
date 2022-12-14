@@ -72,26 +72,25 @@ def GetIPAddress_IP4OnlyDotMe(timeoutInSeconds, shouldShowDebugInfo):
     ipAddress = ipAddressLine.split(',')[1]; 
     return ipAddress;
 
+# https://ifconfig.co/ip
+IPCONF_CHECK_URL = "https://ifconfig.co/ip";
 
-# http://ipv4bot.whatismyipaddress.com/
-WHAT_IS_MY_IP_ADDRESS_CHECK_URL = "http://ipv4bot.whatismyipaddress.com";
-
-def GetIPAddress_WhatIsMyIPAddressDotCom(timeoutInSeconds, shouldShowDebugInfo):
+def GetIPAddress_IPconf(timeoutInSeconds, shouldShowDebugInfo):
     try:
         if (shouldShowDebugInfo):
-            print (f"Fetching from {WHAT_IS_MY_IP_ADDRESS_CHECK_URL}")
-        response = requests.get(WHAT_IS_MY_IP_ADDRESS_CHECK_URL, timeout=timeoutInSeconds);
+            print (f"Fetching from {IPCONF_CHECK_URL}")
+        response = requests.get(IPCONF_CHECK_URL, timeout=timeoutInSeconds);
     except:
         # Site wasn't there, internet is totally down, etc.
-        return f"Error retrieving {WHAT_IS_MY_IP_ADDRESS_CHECK_URL}"
+        return f"Error retrieving {IPCONF_CHECK_URL}"
 
     # Site isn't working properly, URL changed, etc.
     if (response.status_code != requests.codes.ok):
-        return f"Error retrieving {WHAT_IS_MY_IP_ADDRESS_CHECK_URL}, status code: {response.status_code}"
+        return f"Error retrieving {IPCONF_CHECK_URL}, status code: {response.status_code}"
 
-    # This service is simple, no CSV or JSON - just the raw IP address
+    # This service supports JSON etc, but the simple version with just the IP is fine.
     ipAddress = response.text;
- 
+
     return ipAddress;
     
 # https://api.ipify.org
@@ -126,7 +125,7 @@ def CheckAllExternalIPV4Providers(expectedIP4Address, timeoutInSeconds, shouldSh
     startTime = time.time()
 
     AddResultsAndAnyErrors(expectedIP4Address, GetIPAddress_IP4OnlyDotMe(timeoutInSeconds, shouldShowDebugInfo))
-    AddResultsAndAnyErrors(expectedIP4Address, GetIPAddress_WhatIsMyIPAddressDotCom(timeoutInSeconds, shouldShowDebugInfo))
+    AddResultsAndAnyErrors(expectedIP4Address, GetIPAddress_IPconf(timeoutInSeconds, shouldShowDebugInfo))
     AddResultsAndAnyErrors(expectedIP4Address, GetIPAddress_IPify(timeoutInSeconds, shouldShowDebugInfo))
 
     endTime = time.time();
