@@ -114,6 +114,27 @@ def GetIPAddress_icanhazIP(timeoutInSeconds, shouldShowDebugInfo):
 
     return ipAddress;
 
+# https://api.ipify.org
+IPIFY_CHECK_URL = "https://api.ipify.org";
+
+def GetIPAddress_IPify(timeoutInSeconds, shouldShowDebugInfo):
+    try:
+        if (shouldShowDebugInfo):
+            print (f"Fetching from {IPIFY_CHECK_URL}")
+        response = requests.get(IPIFY_CHECK_URL, timeout=timeoutInSeconds);
+    except:
+        # Site wasn't there, internet is totally down, etc.
+        return f"Error retrieving {IPIFY_CHECK_URL}"
+
+    # Site isn't working properly, URL changed, etc.
+    if (response.status_code != requests.codes.ok):
+        return f"Error retrieving {IPIFY_CHECK_URL}, status code: {response.status_code}"
+
+    # This service supports JSON etc, but the simple version with just the IP is fine.
+    ipAddress = response.text;
+
+    return ipAddress;
+
 def AddResultsAndAnyErrors(expectedIP4Address, resultString):
     currentResult = resultString == expectedIP4Address;
     AllResults.append(currentResult);
