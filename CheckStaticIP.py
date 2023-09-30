@@ -145,6 +145,7 @@ def CheckAllExternalIPV4Providers(expectedIP4Address, timeoutInSeconds, shouldSh
 
     startTime = time.time()
 
+    AddResultsAndAnyErrors(expectedIP4Address, GetIPAddress_IPify(timeoutInSeconds, shouldShowDebugInfo))
     AddResultsAndAnyErrors(expectedIP4Address, GetIPAddress_IP4OnlyDotMe(timeoutInSeconds, shouldShowDebugInfo))
     AddResultsAndAnyErrors(expectedIP4Address, GetIPAddress_IPconf(timeoutInSeconds, shouldShowDebugInfo))
     AddResultsAndAnyErrors(expectedIP4Address, GetIPAddress_icanhazIP(timeoutInSeconds, shouldShowDebugInfo))
