@@ -135,6 +135,27 @@ def GetIPAddress_IPify(timeoutInSeconds, shouldShowDebugInfo):
 
     return ipAddress;
 
+# https://ipv4.seeip.org
+SEEIP_CHECK_URL = "https://ipv4.seeip.org";
+
+def GetIPAddress_SEEip(timeoutInSeconds, shouldShowDebugInfo):
+    try:
+        if (shouldShowDebugInfo):
+            print (f"Fetching from {SEEIP_CHECK_URL}")
+        response = requests.get(SEEIP_CHECK_URL, timeout=timeoutInSeconds);
+    except:
+        # Site wasn't there, internet is totally down, etc.
+        return f"Error retrieving {SEEIP_CHECK_URL}"
+
+    # Site isn't working properly, URL changed, etc.
+    if (response.status_code != requests.codes.ok):
+        return f"Error retrieving {SEEIP_CHECK_URL}, status code: {response.status_code}"
+
+    # This service supports JSON etc, but the simple version with just the IP is fine.
+    ipAddress = response.text;
+
+    return ipAddress;
+
 def AddResultsAndAnyErrors(expectedIP4Address, resultString):
     currentResult = resultString == expectedIP4Address;
     AllResults.append(currentResult);
@@ -146,6 +167,7 @@ def CheckAllExternalIPV4Providers(expectedIP4Address, timeoutInSeconds, shouldSh
     startTime = time.time()
 
     AddResultsAndAnyErrors(expectedIP4Address, GetIPAddress_IPify(timeoutInSeconds, shouldShowDebugInfo))
+    AddResultsAndAnyErrors(expectedIP4Address, GetIPAddress_SEEip(timeoutInSeconds, shouldShowDebugInfo))
     AddResultsAndAnyErrors(expectedIP4Address, GetIPAddress_IP4OnlyDotMe(timeoutInSeconds, shouldShowDebugInfo))
     AddResultsAndAnyErrors(expectedIP4Address, GetIPAddress_IPconf(timeoutInSeconds, shouldShowDebugInfo))
     AddResultsAndAnyErrors(expectedIP4Address, GetIPAddress_icanhazIP(timeoutInSeconds, shouldShowDebugInfo))
